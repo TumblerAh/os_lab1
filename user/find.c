@@ -3,7 +3,10 @@
 #include "user/user.h"
 #include "kernel/fs.h"
 
-//这个函数用来补齐空格？
+//ls函数的作用是输出当前目录下的所有内容，如果是文件的话就会输出文件名
+//find函数要做到的是可以直接输出目录和文件的路径
+
+//这个函数可以用来找到某个路径的最后一个分支
 char *fmtname(char *path) {
   static char buf[DIRSIZ + 1];
   char *p;
@@ -38,10 +41,12 @@ void find(char *path,char *filename) {
     return;
   }
 
+
   switch (st.type) {
     case T_FILE:
-        printf("this is file %s\n",fmtname(path));
-    //   printf("%s %d %d %l\n", fmtname(path), st.type, st.ino, st.size);
+        if(strcmp(fmtname(path),filename)==0){
+            printf("%s",path);
+        }
       break;
 
     case T_DIR:
@@ -54,14 +59,21 @@ void find(char *path,char *filename) {
       *p++ = '/';
       while (read(fd, &de, sizeof(de)) == sizeof(de)) {
         if (de.inum == 0) continue; //表示该条目无效
+
+        //跳过. 和 ..
+        if(strcmp(de.name,".") == 0 || strcmp(de.name,"..") == 0){
+          continue;
+        }
         memmove(p, de.name, DIRSIZ); 
         p[DIRSIZ] = 0;
         if (stat(buf, &st) < 0) {
           printf("find: cannot stat %s\n", buf);
           continue;
         }
-        if(strcmp())
-        printf("this is dir %s %d %d %d\n", fmtname(buf), st.type, st.ino, st.size);
+        if(strcmp(de.name,filename)==0){
+          printf("%s\n",buf);
+        }
+        find(buf,filename);
       }
       
       break;
@@ -70,16 +82,12 @@ void find(char *path,char *filename) {
 }
 
 int main(int argc, char *argv[]) {
-  int i;
-
-  if (argc < 2) {
-    find(".");
+  
+  if (argc < 3) {
+    printf("Usage: find <path> <filename>\n");
     exit(0);
   }
-  printf("argc is%d\n",argc);
-  for (i = 1; i < argc; i++){
-    find(argv[i]);
-    printf("%s",argv[i]);
-  } 
+  find(argv[1],argv[2]);
+
   exit(0);
 }
