@@ -38,7 +38,7 @@ uint freeinode = 1;
 uint freeblock;
 
 void balloc(int);
-void wsect(uint, void *);
+void wsect(uint, void *); 
 void winode(uint, struct dinode *);
 void rinode(uint inum, struct dinode *ip);
 void rsect(uint sec, void *buf);
