@@ -3,10 +3,10 @@
 #include "user/user.h"
 #include "kernel/fs.h"
 
-//lsº¯ÊıµÄ×÷ÓÃÊÇÊä³öµ±Ç°Ä¿Â¼ÏÂµÄËùÓĞÄÚÈİ£¬Èç¹ûÊÇÎÄ¼şµÄ»°¾Í»áÊä³öÎÄ¼şÃû
-//findº¯ÊıÒª×öµ½µÄÊÇ¿ÉÒÔÖ±½ÓÊä³öÄ¿Â¼ºÍÎÄ¼şµÄÂ·¾¶
+//lså‡½æ•°çš„ä½œç”¨æ˜¯è¾“å‡ºå½“å‰ç›®å½•ä¸‹çš„æ‰€æœ‰å†…å®¹ï¼Œå¦‚æœæ˜¯æ–‡ä»¶çš„è¯å°±ä¼šè¾“å‡ºæ–‡ä»¶å
+//findå‡½æ•°è¦åšåˆ°çš„æ˜¯å¯ä»¥ç›´æ¥è¾“å‡ºç›®å½•å’Œæ–‡ä»¶çš„è·¯å¾„
 
-//Õâ¸öº¯Êı¿ÉÒÔÓÃÀ´ÕÒµ½Ä³¸öÂ·¾¶µÄ×îºóÒ»¸ö·ÖÖ§
+//è¿™ä¸ªå‡½æ•°å¯ä»¥ç”¨æ¥æ‰¾åˆ°æŸä¸ªè·¯å¾„çš„æœ€åä¸€ä¸ªåˆ†æ”¯
 char *fmtname(char *path) {
   static char buf[DIRSIZ + 1];
   char *p;
@@ -58,9 +58,9 @@ void find(char *path,char *filename) {
       p = buf + strlen(buf);
       *p++ = '/';
       while (read(fd, &de, sizeof(de)) == sizeof(de)) {
-        if (de.inum == 0) continue; //±íÊ¾¸ÃÌõÄ¿ÎŞĞ§
+        if (de.inum == 0) continue; //è¡¨ç¤ºè¯¥æ¡ç›®æ— æ•ˆ
 
-        //Ìø¹ı. ºÍ ..
+        //è·³è¿‡. å’Œ ..
         if(strcmp(de.name,".") == 0 || strcmp(de.name,"..") == 0){
           continue;
         }
@@ -83,7 +83,7 @@ void find(char *path,char *filename) {
 
 int main(int argc, char *argv[]) {
   
-  if (argc < 3) {
+  if (argc != 3) {
     printf("Usage: find <path> <filename>\n");
     exit(0);
   }
