@@ -24,13 +24,14 @@
 #include "buf.h"
 
 struct {
-  struct spinlock lock;
-  struct buf buf[NBUF];
+  struct spinlock lock; //自旋锁，用于用户互斥访问
+  struct buf buf[NBUF];  //双向链表,内存缓存块
 
   // Linked list of all buffers, through prev/next.
   // Sorted by how recently the buffer was used.
   // head.next is most recent, head.prev is least.
-  struct buf head;
+  struct buf head;    //用来引用链表
+  struct buf hashbucket[NBUCKETS]; //每个哈希队列一个linked list 以及一个lock
 } bcache;
 
 void
@@ -55,6 +56,7 @@ binit(void)
 // Look through buffer cache for block on device dev.
 // If not found, allocate a buffer.
 // In either case, return locked buffer.
+//检查请求的磁盘块是不是在缓存中
 static struct buf*
 bget(uint dev, uint blockno)
 {
@@ -123,6 +125,7 @@ brelse(struct buf *b)
 
   acquire(&bcache.lock);
   b->refcnt--;
+  //一个block cache最近被使用过，很可能会再次被使用
   if (b->refcnt == 0) {
     // no one is waiting for it.
     b->next->prev = b->prev;
